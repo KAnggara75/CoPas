@@ -6,17 +6,20 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		0A9E7FAC2F0A5254006C36FA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A9E7FA62F0A5254006C36FA /* Assets.xcassets */; };
+		0A9E7FAE2F0A5254006C36FA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9E7FA52F0A5254006C36FA /* AppDelegate.swift */; };
+		0A9E7FAF2F0A5254006C36FA /* CoPas.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0A9E7FA72F0A5254006C36FA /* CoPas.xcdatamodeld */; };
+		0A9E7FB32F0A53D8006C36FA /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9E7FB22F0A53D8006C36FA /* MenuBarController.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		0A9E7FA52F0A5254006C36FA /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AppDelegate.swift; sourceTree = "<group>"; };
+		0A9E7FA62F0A5254006C36FA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		0A9E7FAB2F0A5254006C36FA /* CoPas.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoPas.xcdatamodel; sourceTree = "<group>"; };
+		0A9E7FB22F0A53D8006C36FA /* MenuBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarController.swift; sourceTree = "<group>"; };
 		0AF78AD42F0A51A7001F305A /* CoPas.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoPas.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		0AF78AD62F0A51A7001F305A /* CoPas */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = CoPas;
-			sourceTree = "<group>";
-		};
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		0AF78AD12F0A51A7001F305A /* Frameworks */ = {
@@ -29,10 +32,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0A9E7FB12F0A53BD006C36FA /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				0A9E7FB22F0A53D8006C36FA /* MenuBarController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
 		0AF78ACB2F0A51A7001F305A = {
 			isa = PBXGroup;
 			children = (
-				0AF78AD62F0A51A7001F305A /* CoPas */,
+				0A9E7FA62F0A5254006C36FA /* Assets.xcassets */,
+				0A9E7FA72F0A5254006C36FA /* CoPas.xcdatamodeld */,
+				0A9E7FA52F0A5254006C36FA /* AppDelegate.swift */,
+				0A9E7FB12F0A53BD006C36FA /* Controller */,
 				0AF78AD52F0A51A7001F305A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -59,9 +73,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				0AF78AD62F0A51A7001F305A /* CoPas */,
 			);
 			name = CoPas;
 			packageProductDependencies = (
@@ -109,6 +120,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A9E7FAC2F0A5254006C36FA /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,6 +131,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A9E7FB32F0A53D8006C36FA /* MenuBarController.swift in Sources */,
+				0A9E7FAE2F0A5254006C36FA /* AppDelegate.swift in Sources */,
+				0A9E7FAF2F0A5254006C36FA /* CoPas.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -260,7 +275,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSMainStoryboardFile = "";
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -294,7 +309,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSMainStoryboardFile = "";
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -335,6 +350,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		0A9E7FA72F0A5254006C36FA /* CoPas.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				0A9E7FAB2F0A5254006C36FA /* CoPas.xcdatamodel */,
+			);
+			currentVersion = 0A9E7FAB2F0A5254006C36FA /* CoPas.xcdatamodel */;
+			path = CoPas.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 0AF78ACC2F0A51A7001F305A /* Project object */;
 }
