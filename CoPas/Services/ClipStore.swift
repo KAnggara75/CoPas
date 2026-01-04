@@ -10,35 +10,30 @@ import Foundation
 final class ClipStore {
 
     static let shared = ClipStore()
-
-    private let maxItems = 50
-    private var clips: [Clip] = []
-    private let queue = DispatchQueue(
-        label: "copas.clipstore.queue",
-        qos: .userInitiated
-    )
-
     private init() {}
 
-    func add(_ clip: Clip) {
-        queue.sync {
-            clips.insert(clip, at: 0)
+    private var clips: [Clip] = []
 
-            if clips.count > maxItems {
-                clips.removeLast()
-            }
-        }
+    func add(_ content: Clip.Content) {
+        let clip = Clip(content: content)
+        clips.insert(clip, at: 0)
+        NSLog("🧠 ClipStore add, total=%d", clips.count)
     }
 
     func all() -> [Clip] {
-        queue.sync {
-            clips
-        }
+        return clips
     }
 
     func clear() {
-        queue.sync {
-            clips.removeAll()
-        }
+        clips.removeAll()
+    }
+
+
+    func add(_ clip: Clip) {
+        clips.insert(clip, at: 0)
+    }
+
+    var count: Int {
+        clips.count
     }
 }

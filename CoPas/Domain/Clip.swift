@@ -12,15 +12,14 @@ enum ClipContent {
     case image(NSImage)
 }
 
-final class Clip: Identifiable {
+struct Clip: Identifiable {
 
-    let id: UUID
-    let createdAt: Date
-    let content: ClipContent
-
-    init(content: ClipContent) {
-        self.id = UUID()
-        self.createdAt = Date()
-        self.content = content
+    enum Content {
+        case text(String)
+        case image(Data) // nanti, belum dipakai
     }
+
+    let id: UUID = UUID()
+    let content: Content
+    let createdAt: Date = Date()
 }

@@ -13,49 +13,51 @@ final class ClipboardService {
 
     private let pasteboard = NSPasteboard.general
     private var lastChangeCount: Int
+    private var ignoreNextChange = false
 
     private init() {
-        self.lastChangeCount = pasteboard.changeCount
+        lastChangeCount = pasteboard.changeCount
+        NSLog("📋 ClipboardService init, count=%d", lastChangeCount)
     }
 
     func start() {
         Timer.scheduledTimer(
             timeInterval: 0.3,
             target: self,
-            selector: #selector(checkPasteboard),
+            selector: #selector(checkClipboard),
             userInfo: nil,
             repeats: true
         )
     }
 
-    @objc private func checkPasteboard() {
-        guard pasteboard.changeCount != lastChangeCount else {
-            return
-        }
-
-        lastChangeCount = pasteboard.changeCount
-        handlePasteboardChange()
+    /// Dipanggil sebelum paste internal
+    func ignoreNextClipboardChange() {
+        ignoreNextChange = true
+        NSLog("🚫 Will ignore next clipboard change")
     }
 
-    private func handlePasteboardChange() {
-        if let string = pasteboard.string(forType: .string) {
-            let clip = Clip(content: .text(string))
-            ClipStore.shared.add(clip)
+    @objc private func checkClipboard() {
+        let currentCount = pasteboard.changeCount
+        guard currentCount != lastChangeCount else { return }
 
-            NSLog("📋 Clip added (text)")
+        lastChangeCount = currentCount
+
+        if ignoreNextChange {
+            NSLog("🚫 Ignored internal paste")
+            ignoreNextChange = false
             return
         }
 
-        if let image = pasteboard.readObjects(
-            forClasses: [NSImage.self],
-            options: nil
-        )?.first as? NSImage {
-            let clip = Clip(content: .image(image))
-            ClipStore.shared.add(clip)
-
-            NSLog("📋 Clip added (image)")
+        guard let text = pasteboard.string(forType: .string),
+              !text.isEmpty else {
             return
+        }
+
+        ClipStore.shared.add(.text(text))
+        NSLog("📋 Clipboard captured, total=%d", ClipStore.shared.count)
+
+        DispatchQueue.main.async {
+            MenuBarController.shared.refreshMenu()
         }
     }
-
 }
