@@ -1,0 +1,94 @@
+name: CoPas Dev CI (Version + DMG)
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      # -------------------------------------------------
+      # Checkout
+      # -------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      # -------------------------------------------------
+      # Auto Versioning (PATCH)
+      # -------------------------------------------------
+      - name: Calculate next version
+        id: version
+        run: |
+          LAST_TAG=$(git tag --sort=-v:refname | head -n 1)
+
+          if [ -z "$LAST_TAG" ]; then
+            MAJOR=0
+            MINOR=1
+            PATCH=0
+          else
+            VERSION=${LAST_TAG#v}
+            IFS='.' read MAJOR MINOR PATCH <<< "$VERSION"
+            PATCH=$((PATCH+1))
+          fi
+
+          NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "📦 Version: $NEW_VERSION"
+
+      - name: Create Git tag
+        run: |
+          git tag v${{ steps.version.outputs.version }}
+          git push origin v${{ steps.version.outputs.version }}
+
+      # -------------------------------------------------
+      # Build macOS App
+      # -------------------------------------------------
+      - name: Build CoPas (Release)
+        run: |
+          xcodebuild \
+            -project CoPas.xcodeproj \
+            -scheme CoPas \
+            -configuration Release \
+            -derivedDataPath build \
+            MARKETING_VERSION=${{ steps.version.outputs.version }} \
+            CURRENT_PROJECT_VERSION=${{ github.run_number }} \
+            build
+
+      # -------------------------------------------------
+      # Build DMG
+      # -------------------------------------------------
+      - name: Install create-dmg
+        run: brew install create-dmg
+
+      - name: Create DMG
+        run: |
+          mkdir -p dist
+          create-dmg \
+            --volname "CoPas Dev" \
+            --window-pos 200 120 \
+            --window-size 800 400 \
+            --icon-size 100 \
+            --icon "CoPas.app" 200 190 \
+            --hide-extension "CoPas.app" \
+            --app-drop-link 600 185 \
+            dist/CoPas-dev-${{ steps.version.outputs.version }}.dmg \
+            build/Build/Products/Release/CoPas.app
+
+      # -------------------------------------------------
+      # Upload Artifact
+      # -------------------------------------------------
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CoPas-dev-${{ steps.version.outputs.version }}
+          path: dist/*.dmg
