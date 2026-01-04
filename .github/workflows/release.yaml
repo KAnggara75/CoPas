@@ -1,58 +1,30 @@
-name: CoPas Dev CI (Version + DMG)
+name: CoPas Dev Build + DMG + Tag
+
+permissions:
+  contents: write # WAJIB agar bisa push tag
 
 on:
   push:
     branches:
-      - main
+      - dev
 
 jobs:
+  # =====================================================
+  # BUILD macOS APP + DMG
+  # =====================================================
   build:
     runs-on: macos-latest
 
     steps:
-      # -------------------------------------------------
+      # ------------------------
       # Checkout
-      # -------------------------------------------------
+      # ------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Setup Git
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-
-      # -------------------------------------------------
-      # Auto Versioning (PATCH)
-      # -------------------------------------------------
-      - name: Calculate next version
-        id: version
-        run: |
-          LAST_TAG=$(git tag --sort=-v:refname | head -n 1)
-
-          if [ -z "$LAST_TAG" ]; then
-            MAJOR=0
-            MINOR=1
-            PATCH=0
-          else
-            VERSION=${LAST_TAG#v}
-            IFS='.' read MAJOR MINOR PATCH <<< "$VERSION"
-            PATCH=$((PATCH+1))
-          fi
-
-          NEW_VERSION="$MAJOR.$MINOR.$PATCH"
-          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
-          echo "📦 Version: $NEW_VERSION"
-
-      - name: Create Git tag
-        run: |
-          git tag v${{ steps.version.outputs.version }}
-          git push origin v${{ steps.version.outputs.version }}
-
-      # -------------------------------------------------
-      # Build macOS App
-      # -------------------------------------------------
+      # ------------------------
+      # Build App
+      # ------------------------
       - name: Build CoPas (Release)
         run: |
           xcodebuild \
@@ -60,16 +32,17 @@ jobs:
             -scheme CoPas \
             -configuration Release \
             -derivedDataPath build \
-            MARKETING_VERSION=${{ steps.version.outputs.version }} \
-            CURRENT_PROJECT_VERSION=${{ github.run_number }} \
             build
 
-      # -------------------------------------------------
-      # Build DMG
-      # -------------------------------------------------
+      # ------------------------
+      # Install create-dmg
+      # ------------------------
       - name: Install create-dmg
         run: brew install create-dmg
 
+      # ------------------------
+      # Build DMG
+      # ------------------------
       - name: Create DMG
         run: |
           mkdir -p dist
@@ -81,14 +54,66 @@ jobs:
             --icon "CoPas.app" 200 190 \
             --hide-extension "CoPas.app" \
             --app-drop-link 600 185 \
-            dist/CoPas-dev-${{ steps.version.outputs.version }}.dmg \
+            dist/CoPas-dev.dmg \
             build/Build/Products/Release/CoPas.app
 
-      # -------------------------------------------------
+      # ------------------------
       # Upload Artifact
-      # -------------------------------------------------
+      # ------------------------
       - name: Upload DMG artifact
         uses: actions/upload-artifact@v4
         with:
-          name: CoPas-dev-${{ steps.version.outputs.version }}
-          path: dist/*.dmg
+          name: CoPas-dev-dmg
+          path: dist/CoPas-dev.dmg
+
+  # =====================================================
+  # CREATE TAG (WIB) – HANYA JIKA BUILD SUKSES
+  # =====================================================
+  create-tag:
+    runs-on: ubuntu-latest
+    needs: build
+    env:
+      TZ: Asia/Jakarta
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Hitung versi tag (WIB)
+        id: ver
+        run: |
+          sudo ln -sf /usr/share/zoneinfo/$TZ /etc/localtime
+
+          yy=$(date +%y)
+          m=$(date +%-m)
+          d=$(date +%-d)
+          HH=$(date +%H)
+          MM=$(date +%M)
+
+          tag="v0.${yy}.${m}-${d}${HH}${MM}"
+
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "📦 Tag yang akan dibuat: $tag"
+
+      - name: Cek apakah tag sudah ada
+        id: check
+        run: |
+          git fetch --tags --quiet
+
+          if git rev-parse -q --verify "refs/tags/${{ steps.ver.outputs.tag }}" >/dev/null; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "⚠️ Tag sudah ada"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Buat dan push tag
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git tag -a "${{ steps.ver.outputs.tag }}" -m "Auto dev tag ${{ steps.ver.outputs.tag }}"
+          git push origin "${{ steps.ver.outputs.tag }}"
