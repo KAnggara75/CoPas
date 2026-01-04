@@ -53,7 +53,10 @@ final class ClipboardService {
             return
         }
 
-        ClipStore.shared.add(.text(text))
+        ClipStore.shared.add(
+            Clip(content: .text(text))
+        )
+
         NSLog("📋 Clipboard captured, total=%d", ClipStore.shared.count)
 
         DispatchQueue.main.async {

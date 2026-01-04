@@ -7,19 +7,20 @@
 
 import Cocoa
 
-enum ClipContent {
-    case text(String)
-    case image(NSImage)
-}
+struct Clip: Identifiable, Equatable {
 
-struct Clip: Identifiable {
-
-    enum Content {
+    enum Content: Equatable {
         case text(String)
-        case image(Data) // nanti, belum dipakai
+        case image(Data) // simpan sebagai Data (aman untuk future persistence)
     }
 
-    let id: UUID = UUID()
+    let id: UUID
     let content: Content
-    let createdAt: Date = Date()
+    let createdAt: Date
+
+    init(content: Content) {
+        self.id = UUID()
+        self.content = content
+        self.createdAt = Date()
+    }
 }

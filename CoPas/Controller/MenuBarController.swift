@@ -31,6 +31,7 @@ final class MenuBarController {
     // 🔥 INI YANG PENTING
     func refreshMenu() {
         let menu = NSMenu()
+        menu.autoenablesItems = false
         let clips = ClipStore.shared.all()
 
         if clips.isEmpty {
@@ -72,10 +73,25 @@ final class MenuBarController {
                 menu.addItem(parentItem)
             }
         }
-
+        
         menu.addItem(.separator())
-        menu.addItem(NSMenuItem(title: "Clear History", action: #selector(clearHistory), keyEquivalent: ""))
-        menu.addItem(NSMenuItem(title: "Quit CoPas", action: #selector(quit), keyEquivalent: "q"))
+        let clearItem = NSMenuItem(
+            title: "Clear History",
+            action: #selector(clearHistory),
+            keyEquivalent: ""
+        )
+        clearItem.target = self
+        clearItem.isEnabled = ClipStore.shared.count > 0;
+
+        menu.addItem(clearItem)
+        
+        let quitItem = NSMenuItem(
+            title: "Quit CoPas",
+            action: #selector(quit),
+            keyEquivalent: "q"
+        )
+        quitItem.target = self
+        menu.addItem(quitItem)
 
         statusItem?.menu = menu
     }
