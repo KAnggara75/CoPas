@@ -19,5 +19,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Status bar
         MenuBarController.shared.setup()
+        ClipboardService.shared.start()
     }
 }
