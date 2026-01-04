@@ -11,9 +11,13 @@ import Cocoa
 final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        NSLog("🔥 CoPas App Launched")
+
+        // TRUE agent mode
         NSApp.setActivationPolicy(.prohibited)
-        print("🔥 CoPas started")
-//        MenuBarController.shared.setup()
+        NSApp.mainMenu = nil
+
+        // Status bar
+        MenuBarController.shared.setup()
     }
 }
-
