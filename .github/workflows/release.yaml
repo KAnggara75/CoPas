@@ -3,7 +3,7 @@ name: CoPas Dev CI (Version + DMG)
 on:
   push:
     branches:
-      - dev
+      - main
 
 jobs:
   build:
